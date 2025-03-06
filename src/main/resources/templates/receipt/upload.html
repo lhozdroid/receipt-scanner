@@ -1,10 +1,40 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <th:block th:replace="~{common/meta :: meta}"></th:block>
+        <th:block th:replace="~{common/styles :: styles}"></th:block>
 
-</body>
+        <title>Receipt Scanner</title>
+    </head>
+    <body>
+        <th:block th:replace="~{common/header :: header}"></th:block>
+
+        <div class="container-fluid">
+            <div class="row mt-3">
+                <div class="col">
+                    <h4>
+                        <span class="fa-classic fa-solid fa-file-arrow-up fa-fw"></span>
+                        Upload Receipts
+                    </h4>
+                </div>
+                <div class="col text-end">
+                    <a th:href="@{/app/receipts}" class="btn btn-sm btn-dark" type="button">
+                        <span class="fa-classic fa-solid fa-chevron-left fa-fw"></span>
+                        Return
+                    </a>
+                </div>
+            </div>
+            <div class="row mt-3">
+                <div class="col">
+                    <div class="card shadow">
+                        <div class="card-body">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <th:block th:replace="~{common/footer :: footer}"></th:block>
+        <th:block th:replace="~{common/scripts :: scripts}"></th:block>
+    </body>
 </html>

@@ -6,8 +6,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
 @Controller
-@RequestMapping("/app/invoices")
-public class InvoiceView {
+@RequestMapping("/app/receipts")
+public class ReceiptView {
 
     /**
      * @return
@@ -15,7 +15,7 @@ public class InvoiceView {
      */
     @GetMapping
     public ModelAndView index() throws Exception {
-        ModelAndView mv = new ModelAndView("invoice/index.html");
+        ModelAndView mv = new ModelAndView("receipt/index.html");
         return mv;
     }
 
@@ -25,7 +25,7 @@ public class InvoiceView {
      */
     @GetMapping("/upload")
     public ModelAndView upload() throws Exception {
-        ModelAndView mv = new ModelAndView();
+        ModelAndView mv = new ModelAndView("receipt/upload.html");
         return mv;
     }
 }

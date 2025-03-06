@@ -1,7 +1,7 @@
-package com.lavishlyholiday.invoicescanner.service;
+package com.lavishlyholiday.receiptscanner.service;
 
 import org.springframework.stereotype.Service;
 
 @Service
-public class InvoiceService {
+public class ReceiptService {
 }

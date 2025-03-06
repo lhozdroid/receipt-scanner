@@ -1,4 +1,4 @@
-package com.lavishlyholiday.invoicescanner.ui.handler;
+package com.lavishlyholiday.receiptscanner.ui.handler;
 
 import org.springframework.web.bind.annotation.ControllerAdvice;
 

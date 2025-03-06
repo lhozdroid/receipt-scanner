@@ -1,3 +1,3 @@
-import InvoicesTable from "../../../component/js/invoices-table.js";
+import ReceiptsTable from "../../../component/js/receipts-table.js";
 
-customElements.define("invoices-table", InvoicesTable);
+customElements.define("receipts-table", ReceiptsTable);

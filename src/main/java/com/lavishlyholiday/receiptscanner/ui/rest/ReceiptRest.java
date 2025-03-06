@@ -1,4 +1,9 @@
-package com.lavishlyholiday.invoicescanner.ui.rest;
+package com.lavishlyholiday.receiptscanner.ui.rest;
 
-public class InvoiceRest {
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+@RequestMapping("/api/receipts")
+public class ReceiptRest {
 }

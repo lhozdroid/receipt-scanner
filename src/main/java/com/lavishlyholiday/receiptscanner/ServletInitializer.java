@@ -1,4 +1,4 @@
-package com.lavishlyholiday.invoicescanner;
+package com.lavishlyholiday.receiptscanner;
 
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;

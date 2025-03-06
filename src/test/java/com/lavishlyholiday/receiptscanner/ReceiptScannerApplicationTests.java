@@ -1,4 +1,4 @@
-package com.lavishlyholiday.invoicescanner;
+package com.lavishlyholiday.receiptscanner;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -6,6 +6,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 @SpringBootTest
 class ReceiptScannerApplicationTests {
 
+    /**
+     *
+     */
     @Test
     void contextLoads() {
     }
