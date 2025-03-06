@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <th:block th:replace="~{common/meta :: meta}"></th:block>
+        <th:block th:replace="~{common/styles :: styles}"></th:block>
+
+        <title>Invoice Scanner</title>
+    </head>
+    <body>
+        <th:block th:replace="~{common/header :: header}"></th:block>
+
+        <div class="container-fluid">
+            <div class="row mt-3">
+                <div class="col">
+                    <h1>
+                        <span class="fa-classic fa-solid fa-file-invoice-dollar fa-fw"></span>
+                        Invoices
+                    </h1>
+                </div>
+            </div>
+            <div class="row mt-3">
+                <div class="col">
+                    <div class="card shadow">
+                        <div class="card-body"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <th:block th:replace="~{common/footer :: footer}"></th:block>
+        <th:block th:replace="~{common/scripts :: scripts}"></th:block>
+        <script th:src="@{/assets/view/invoice/js/index.js}" type="module"></script>
+    </body>
+</html>
