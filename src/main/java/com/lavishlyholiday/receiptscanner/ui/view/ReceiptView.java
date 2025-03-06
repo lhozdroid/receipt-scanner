@@ -1,4 +1,4 @@
-package com.lavishlyholiday.invoicescanner.ui.view;
+package com.lavishlyholiday.receiptscanner.ui.view;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
