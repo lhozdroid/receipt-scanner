@@ -28,6 +28,7 @@ public class Receipt {
 
     private String state;
     private String error;
+
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 }
