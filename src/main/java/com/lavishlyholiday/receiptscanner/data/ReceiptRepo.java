@@ -3,12 +3,15 @@ package com.lavishlyholiday.receiptscanner.data;
 import com.lavishlyholiday.receiptscanner.data.model.Receipt;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Repository
 @AllArgsConstructor
@@ -42,6 +45,42 @@ public class ReceiptRepo {
         } catch (Exception e) {
             LOG.error(e.getMessage(), e);
             throw new Exception("Unable to check if receipt exists.", e);
+        }
+    }
+
+    /**
+     * @return
+     * @throws Exception
+     */
+    public List<Receipt> findAll() throws Exception {
+        String query = """
+                SELECT
+                	ID,
+                	FILE_NAME,
+                	FILE_TYPE,
+                	FILE_DATA,
+                	RECEIPT_NUMBER,
+                	RECEIPT_TOTAL,
+                	RECEIPT_DATE,
+                	RECEIPT_DESCRIPTION,
+                	COMPANY_NAME,
+                	COMPANY_ADDRESS,
+                	COMPANY_PHONE,
+                	TAX_CATEGORY,
+                	TAX_SUB_CATEGORY,
+                	STATE,
+                	ERROR,
+                	CREATED_AT,
+                	UPDATED_AT
+                FROM
+                	PUBLIC.RECEIPT
+                """;
+
+        try {
+            return template.query(query, new MapSqlParameterSource(), new BeanPropertyRowMapper<>(Receipt.class));
+        } catch (Exception e) {
+            LOG.error(e.getMessage(), e);
+            throw new Exception("Unable to obtain the receipts.", e);
         }
     }
 

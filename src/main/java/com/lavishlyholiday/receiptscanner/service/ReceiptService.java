@@ -4,16 +4,27 @@ import com.lavishlyholiday.receiptscanner.data.ReceiptRepo;
 import com.lavishlyholiday.receiptscanner.data.cons.ReceiptState;
 import com.lavishlyholiday.receiptscanner.data.model.Receipt;
 import lombok.AllArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @Service
 @AllArgsConstructor
+@Log4j2
 public class ReceiptService {
     private final ReceiptRepo receiptRepo;
+
+    /**
+     * @return
+     * @throws Exception
+     */
+    public List<Receipt> findAll() throws Exception {
+        return receiptRepo.findAll();
+    }
 
     /**
      * @param file

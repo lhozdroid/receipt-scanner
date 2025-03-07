@@ -31,10 +31,39 @@ export default class Util {
 
     /**
      *
+     * @param localDateTime
+     * @returns {string}
+     */
+    static formatLocalDateTime(localDateTime) {
+        const d = new Date(localDateTime);
+        const year = d.getFullYear();
+        const month = String(d.getMonth() + 1).padStart(2, '0'); // Ensure 2 digits
+        const day = String(d.getDate()).padStart(2, '0');
+        const hours = String(d.getHours()).padStart(2, '0');
+        const minutes = String(d.getMinutes()).padStart(2, '0');
+
+        return `${month}/${day}/${year} ${hours}:${minutes}`;
+    }
+
+    /**
+     *
      * @param name
      * @returns {string}
      */
     static getMeta(name) {
         return document.querySelector(`meta[name='${name}']`).getAttribute("content");
     }
+
+    /**
+     *
+     * @param text
+     * @returns {string}
+     */
+    static snakeToTitleCase(text) {
+        return text
+            .split('_') //
+            .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()) //
+            .join(' ');
+    }
+
 }

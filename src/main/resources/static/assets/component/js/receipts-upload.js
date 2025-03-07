@@ -13,6 +13,9 @@ export default class ReceiptsUpload extends HTMLElement {
         super();
     }
 
+    /**
+     *
+     */
     #initFilepond() {
         FilePond.registerPlugin();
         FilePond.registerPlugin(FilePondPluginFileValidateType);
@@ -21,18 +24,27 @@ export default class ReceiptsUpload extends HTMLElement {
         this.#filepond.setOptions({
             "server": {
                 "url": `${Util.getMeta("context")}api/receipts/upload`, //
-                "method": "POST"
+                "method": "POST",
+                process: {
+                    onerror: (response) => {
+                        return response;
+                    }
+                }
             }, //
             "acceptedFileTypes": ["image/*"], //
             "allowRevert": false, //
-            "allowRemove": false, "labelIdle": "Click here to upload the receipts",
+            "allowRemove": false, //
+            "labelIdle": "Click here to upload the receipts",
             "maxParallelUploads": 5,
-            "maxFiles": 50
+            "maxFiles": 50,
+            "checkValidity": true,
+            "labelFileProcessingError": (error) => {
+                return error.body;
+            }
         });
 
         this.#filepond.on("processfile", (error, file) => {
-            console.log(error);
-            if(!error) {
+            if (!error) {
                 this.#counter++;
                 this.querySelector("span.total-uploaded").innerHTML = this.#counter;
                 setTimeout(() => this.#filepond.removeFile(file.id), 3000);
@@ -40,9 +52,11 @@ export default class ReceiptsUpload extends HTMLElement {
         });
 
         this.#filepond.on("warning", (error) => {
-            if(error.body === "Max files") {
+            if (error.body === "Max files") {
                 BModal.danger("Only 50 files can be uploaded at the same time.", "Error");
             }
+
+            console.log(error);
         });
     }
 

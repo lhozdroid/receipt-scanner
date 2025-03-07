@@ -28,7 +28,7 @@ export default class DatatablesAction {
     #initTemplate() {
         // language=HTML
         const template = `
-            <button type="button" class="${this.#options.class}">
+            <button type="button" class="${this.#options.class} me-1">
                 <span class="${this.#options.icon}"></span>
                 ${this.#options.title}
             </button>
