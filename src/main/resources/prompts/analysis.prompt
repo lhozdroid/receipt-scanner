@@ -1,0 +1,39 @@
+Your task is to extract structured data from receipt text and return it strictly in JSON format.
+
+### **Extraction Requirements:**
+- Extract the following fields:
+  - **receiptNumber**: The unique receipt number.
+  - **receiptTotal**: The total amount of the receipt as a **numerical value** (without currency symbols).
+  - **receiptDate**: The receipt date in **ISO 8601 format (`yyyy-MM-dd'T'HH:mm:ss`)**, ensuring direct compatibility with `LocalDateTime` in Java when parsed using Jackson.
+  - **receiptDescription**: A short summary of the receipt’s contents.
+  - **companyName**: The name of the business issuing the receipt.
+  - **companyAddress**: The business’s address.
+  - **companyPhone**: The business’s contact phone number.
+  - **taxCategory**: The **primary tax category** that best fits the purchase, chosen only from the predefined list.
+  - **taxSubCategory**: The **specific subcategory** that best matches the expense, chosen only from the predefined list.
+
+### **Tax Categorization Rules:**
+- The categorization must be based **only on the receipt’s listed items** and their descriptions.
+- Select the most logical **taxCategory** and **taxSubCategory** from the following predefined categories:
+  *(Same category list as yours)*
+- **If a receipt contains multiple tax categories, return only the most relevant category.**
+- **If no clear category applies, return `"Other Expenses"` instead of `null`.**
+
+### **Output Rules:**
+- **Return JSON only.** Do not include any explanations, additional text, or formatting.
+- **If any field is missing from the receipt, return `null` for that field.**
+- **Ensure valid JSON syntax** with the following format:
+
+```json
+{
+  "receiptNumber": "123456",
+  "receiptTotal": 250.75,
+  "receiptDate": "2024-03-07T14:30:00",
+  "receiptDescription": "Flower purchase for event decoration",
+  "companyName": "Blooming Flowers LLC",
+  "companyAddress": "123 Main St, Springfield, IL",
+  "companyPhone": "(555) 123-4567",
+  "taxCategory": "Supplies",
+  "taxSubCategory": "Fresh & Artificial Flowers"
+}
+```

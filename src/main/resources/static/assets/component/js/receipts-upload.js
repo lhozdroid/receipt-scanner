@@ -36,7 +36,6 @@ export default class ReceiptsUpload extends HTMLElement {
             "allowRemove": false, //
             "labelIdle": "Click here to upload the receipts",
             "maxParallelUploads": 5,
-            "maxFiles": 50,
             "checkValidity": true,
             "labelFileProcessingError": (error) => {
                 return error.body;
@@ -49,14 +48,6 @@ export default class ReceiptsUpload extends HTMLElement {
                 this.querySelector("span.total-uploaded").innerHTML = this.#counter;
                 setTimeout(() => this.#filepond.removeFile(file.id), 3000);
             }
-        });
-
-        this.#filepond.on("warning", (error) => {
-            if (error.body === "Max files") {
-                BModal.danger("Only 50 files can be uploaded at the same time.", "Error");
-            }
-
-            console.log(error);
         });
     }
 

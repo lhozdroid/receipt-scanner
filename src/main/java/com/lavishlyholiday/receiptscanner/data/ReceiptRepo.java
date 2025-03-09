@@ -11,6 +11,7 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Repository
@@ -58,7 +59,6 @@ public class ReceiptRepo {
                 	ID,
                 	FILE_NAME,
                 	FILE_TYPE,
-                	FILE_DATA,
                 	RECEIPT_NUMBER,
                 	RECEIPT_TOTAL,
                 	RECEIPT_DATE,
@@ -81,6 +81,52 @@ public class ReceiptRepo {
         } catch (Exception e) {
             LOG.error(e.getMessage(), e);
             throw new Exception("Unable to obtain the receipts.", e);
+        }
+    }
+
+    /**
+     * @param state
+     * @param limit
+     * @return
+     * @throws Exception
+     */
+    public List<Receipt> findByStateLimited(String state, Integer limit) throws Exception {
+        String query = """
+                SELECT
+                	ID,
+                	FILE_NAME,
+                	FILE_TYPE,
+                	FILE_DATA,
+                	RECEIPT_NUMBER,
+                	RECEIPT_TOTAL,
+                	RECEIPT_DATE,
+                	RECEIPT_DESCRIPTION,
+                	COMPANY_NAME,
+                	COMPANY_ADDRESS,
+                	COMPANY_PHONE,
+                	TAX_CATEGORY,
+                	TAX_SUB_CATEGORY,
+                	STATE,
+                	ERROR,
+                	CREATED_AT,
+                	UPDATED_AT
+                FROM
+                	PUBLIC.RECEIPT
+                WHERE
+                	STATE = :state
+                LIMIT
+                	:limit
+                """;
+
+        SqlParameterSource params = new MapSqlParameterSource() //
+                .addValue("state", state) //
+                .addValue("limit", limit);
+
+        try {
+            return template.query(query, params, new BeanPropertyRowMapper<>(Receipt.class));
+        } catch (Exception e) {
+            LOG.error(e.getMessage(), e);
+            throw new Exception("Unable to find receipts.", e);
         }
     }
 
@@ -142,4 +188,48 @@ public class ReceiptRepo {
             throw new Exception("Unable to upload receipt.", e);
         }
     }
+
+    /**
+     * @param receipts
+     * @throws Exception
+     */
+    @Transactional(rollbackFor = Exception.class)
+    public void update(List<Receipt> receipts) throws Exception {
+        String query = """
+                UPDATE PUBLIC.RECEIPT
+                SET
+                	FILE_NAME = :fileName,
+                	FILE_TYPE = :fileType,
+                	FILE_DATA = :fileData,
+                	RECEIPT_NUMBER = :receiptNumber,
+                	RECEIPT_TOTAL = :receiptTotal,
+                	RECEIPT_DATE = :receiptDate,
+                	RECEIPT_DESCRIPTION = :receiptDescription,
+                	COMPANY_NAME = :companyName,
+                	COMPANY_ADDRESS = :companyAddress,
+                	COMPANY_PHONE = :companyPhone,
+                	TAX_CATEGORY = :taxCategory,
+                	TAX_SUB_CATEGORY = :taxSubCategory,
+                	STATE = :state,
+                	ERROR = :error,
+                	CREATED_AT = :createdAt,
+                	UPDATED_AT = :updatedAt
+                WHERE
+                	ID = :id
+                """;
+
+        List<SqlParameterSource> paramsList = new ArrayList<>();
+        receipts.stream().forEach(receipt -> {
+            SqlParameterSource params = new BeanPropertySqlParameterSource(receipt);
+            paramsList.add(params);
+        });
+
+        try {
+            template.batchUpdate(query, paramsList.toArray(new SqlParameterSource[paramsList.size()]));
+        } catch (Exception e) {
+            LOG.error(e.getMessage(), e);
+            throw new Exception("Unable to update receipts.", e);
+        }
+    }
 }
+

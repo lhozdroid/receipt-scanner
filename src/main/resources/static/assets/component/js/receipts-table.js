@@ -27,11 +27,17 @@ export default class ReceiptsTable extends HTMLElement {
             "language": {
                 "lengthMenu": "_MENU_"
             }, //
+            "typeDetect": false, //
             "columns": [ //
                 {data: "action"}, //
                 {data: "receiptNumber"}, //
                 {data: "receiptTotal"}, //
-                {data: "receiptDate"}, //
+                {
+                    data: "receiptDate", //
+                    render: (data, type, row) => {
+                        return Util.formatLocalDateTime(data);
+                    }
+                }, //
                 {data: "receiptDescription"}, //
                 {data: "companyName"}, //
                 {data: "companyAddress"}, //
@@ -66,8 +72,8 @@ export default class ReceiptsTable extends HTMLElement {
      */
     #initDatatablePlugins() {
         this.#datatablePlugins["columnToggle"] = new DatatablesColumnToggle(this.#datatable, {
-            "defaultIgnored": [0], "defaultHidden": [4, 6, 7, 11, 12, 13]
-
+            "defaultIgnored": [0], //
+            "defaultHidden": [1, 3, 4, 6, 7, 11, 12, 13]
         });
         this.#datatablePlugins["uploadAction"] = new DatatablesAction(this.#datatable, {
             "class": "btn btn-sm btn-success", //
@@ -121,7 +127,7 @@ export default class ReceiptsTable extends HTMLElement {
      */
     #loadReceipts() {
         const promise = ReceiptApi.findAll();
-        promise.finally(() => setTimeout(() => this.#loadReceipts(), 5000));
+        promise.finally(() => setTimeout(() => this.#loadReceipts(), 10000));
         promise.catch((error) => BModal.danger(error, "Error"));
         promise.then((receipts) => {
             receipts.forEach((receipt) => receipt["action"] = null);
