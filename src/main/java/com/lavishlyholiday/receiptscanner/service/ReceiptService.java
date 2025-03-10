@@ -40,7 +40,7 @@ public class ReceiptService {
                 analyzeReceipt(receipt);
 
                 // Updates the state to success
-                receipt.setState(ReceiptState.ANALYSIS_COMPLETE.name());
+                receipt.setState(ReceiptState.REVISION_PENDING.name());
             } catch (Exception e) {
                 LOG.error(e.getLocalizedMessage(), e);
 
@@ -60,6 +60,19 @@ public class ReceiptService {
      */
     public List<Receipt> findAll() throws Exception {
         return receiptRepo.findAll();
+    }
+
+    /**
+     * @param id
+     * @return
+     * @throws Exception
+     */
+    public Receipt findFileDataById(UUID id) throws Exception {
+        Receipt receipt = receiptRepo.findFileById(id);
+        if(receipt == null) {
+            throw new Exception("File not found.");
+        }
+        return receipt;
     }
 
     /**

@@ -12,8 +12,8 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Repository
 @AllArgsConstructor
@@ -86,6 +86,36 @@ public class ReceiptRepo {
     }
 
     /**
+     * @param id
+     * @return
+     * @throws Exception
+     */
+    public Receipt findFileById(UUID id) throws Exception {
+        String query = """
+                SELECT
+                    FILE_NAME,
+                    FILE_TYPE,
+                	FILE_DATA
+                FROM
+                	PUBLIC.RECEIPT
+                WHERE
+                    ID = :id
+                """;
+
+        SqlParameterSource params = new MapSqlParameterSource() //
+                .addValue("id", id);
+
+        try {
+            return template.query(query, params, new BeanPropertyRowMapper<>(Receipt.class)).stream() //
+                    .findFirst() //
+                    .orElse(null);
+        } catch (Exception e) {
+            LOG.error(e.getMessage(), e);
+            throw new Exception("Unable to obtain the file.", e);
+        }
+    }
+
+    /**
      * @param state
      * @return
      * @throws Exception
@@ -123,7 +153,7 @@ public class ReceiptRepo {
 
         SqlParameterSource params = new MapSqlParameterSource() //
                 .addValue("state", state) //
-                .addValue("updatedBefore", updatedBefore) ;
+                .addValue("updatedBefore", updatedBefore);
 
         try {
             return template.query(query, params, new BeanPropertyRowMapper<>(Receipt.class)).stream() //
@@ -134,7 +164,6 @@ public class ReceiptRepo {
             throw new Exception("Unable to find receipt with state %s.".formatted(state), e);
         }
     }
-
 
 
     /**

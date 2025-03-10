@@ -3,6 +3,7 @@ import DatatablesColumnToggle from "../../datatables/js/datatables-column-toggle
 import Util from "../../util/js/util.js";
 import ReceiptApi from "../../api/js/receipt-api.js";
 import BModal from "../../bmodal/js/bmodal.js";
+import ReviewReceipt from "./review-receipt.js";
 
 export default class ReceiptsTable extends HTMLElement {
     #table = null;
@@ -29,7 +30,10 @@ export default class ReceiptsTable extends HTMLElement {
             }, //
             "typeDetect": false, //
             "columns": [ //
-                {"data": "action"}, //
+                {
+                    "data": "action", //
+                    "render": (data, type, row) => this.#renderAction(data, type, row)
+                }, //
                 {"data": "fileName"}, //
                 {"data": "receiptNumber"}, //
                 {"data": "receiptTotal"}, //
@@ -119,7 +123,7 @@ export default class ReceiptsTable extends HTMLElement {
                         <th>Error</th>
                     </tr>
                 </thead>
-                <tbody></tbody>
+                <tbody class="align-middle"></tbody>
             </table>
         `;
         this.#table = this.querySelector("table");
@@ -130,14 +134,36 @@ export default class ReceiptsTable extends HTMLElement {
      */
     #loadReceipts() {
         const promise = ReceiptApi.findAll();
-        promise.finally(() => setTimeout(() => this.#loadReceipts(), 10000));
-        promise.catch((error) => BModal.danger(error, "Error"));
+        promise.catch((error) => {
+            BModal.danger(error, "Error");
+            setTimeout(() => this.#loadReceipts(), 10000);
+        });
         promise.then((receipts) => {
             receipts.forEach((receipt) => receipt["action"] = null);
             this.#datatable.clear();
             this.#datatable.rows.add(receipts);
             this.#datatable.draw(false);
+            setTimeout(() => this.#loadReceipts(), 10000)
         });
+    }
+
+    /**
+     *
+     * @param data
+     * @param type
+     * @param row
+     */
+    #renderAction(data, type, row) {
+        // language=HTML
+        const button = new DOMParser().parseFromString(`
+            <button type="button" class="btn btn-sm btn-primary">
+                <span class="fa-classic fa-solid fa-magnifying-glass fa-fw"></span>
+            </button>
+        `, "text/html").body.firstChild;
+
+        button.addEventListener("click", () => new ReviewReceipt(row));
+
+        return button;
     }
 
     /**

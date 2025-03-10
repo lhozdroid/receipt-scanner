@@ -70,27 +70,7 @@ public class OpenAiService {
 
         // Extracts the message
         String content = response.getResult().getOutput().getText();
-
-        // Extracts the JSON
-        String json = extractJson(content);
-        return json;
-    }
-
-    /**
-     * @param content
-     * @return
-     * @throws Exception
-     */
-    private String extractJson(String content) throws Exception {
-        Pattern pattern = Pattern.compile("```json\\n(.*?)\\n```", Pattern.DOTALL);
-        Matcher matcher = pattern.matcher(content);
-
-        if (!matcher.find()) {
-            throw new Exception("Unable to extract receipt information.");
-        }
-
-        String json = matcher.group(1).trim();
-        return json;
+        return content;
     }
 
     /**
