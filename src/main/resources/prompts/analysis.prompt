@@ -1,39 +1,98 @@
-Your task is to extract structured data from receipt text and return it strictly in JSON format.
+INSTRUCTION:
+Analyze the invoice and return a single JSON object (no extra text) with exactly these 9 fields:
 
-### **Extraction Requirements:**
-- Extract the following fields:
-  - **receiptNumber**: The unique receipt number.
-  - **receiptTotal**: The total amount of the receipt as a **numerical value** (without currency symbols).
-  - **receiptDate**: The receipt date in **ISO 8601 format (`yyyy-MM-dd'T'HH:mm:ss`)**, ensuring direct compatibility with `LocalDateTime` in Java when parsed using Jackson.
-  - **receiptDescription**: A short summary of the receipt’s contents.
-  - **companyName**: The name of the business issuing the receipt.
-  - **companyAddress**: The business’s address.
-  - **companyPhone**: The business’s contact phone number.
-  - **taxCategory**: The **primary tax category** that best fits the purchase, chosen only from the predefined list.
-  - **taxSubCategory**: The **specific subcategory** that best matches the expense, chosen only from the predefined list.
-
-### **Tax Categorization Rules:**
-- The categorization must be based **only on the receipt’s listed items** and their descriptions.
-- Select the most logical **taxCategory** and **taxSubCategory** from the following predefined categories:
-  *(Same category list as yours)*
-- **If a receipt contains multiple tax categories, return only the most relevant category.**
-- **If no clear category applies, return `"Other Expenses"` instead of `null`.**
-
-### **Output Rules:**
-- **Return JSON only.** Do not include any explanations, additional text, or formatting.
-- **If any field is missing from the receipt, return `null` for that field.**
-- **Ensure valid JSON syntax** with the following format:
-
-```json
 {
-  "receiptNumber": "123456",
-  "receiptTotal": 250.75,
-  "receiptDate": "2024-03-07T14:30:00",
-  "receiptDescription": "Flower purchase for event decoration",
-  "companyName": "Blooming Flowers LLC",
-  "companyAddress": "123 Main St, Springfield, IL",
-  "companyPhone": "(555) 123-4567",
-  "taxCategory": "Supplies",
-  "taxSubCategory": "Fresh & Artificial Flowers"
+  "receiptNumber": "",
+  "receiptTotal": 0.0,
+  "receiptDate": "",
+  "receiptDescription": "",
+  "companyName": "",
+  "companyAddress": "",
+  "companyPhone": "",
+  "taxCategory": "",
+  "taxSubCategory": ""
 }
-```
+
+1. All items on the invoice are legitimate business expenses—none are ignored.
+2. Fill missing fields with a default (e.g., "receiptTotal": 0.0).
+3. "receiptDate" must be ISO 8601 (e.g., 2024-03-07T14:30:00).
+4. "taxCategory" and "taxSubCategory" must strictly match one of the **Approved IRS Categories & Subcategories** below.
+   - If no clear match, default to:
+     "taxCategory": "Other Expenses",
+     "taxSubCategory": "Miscellaneous Business Purchases"
+
+APPROVED IRS CATEGORIES & SUBCATEGORIES:
+
+1. Advertising
+   - Online Ads
+   - Print Ads
+   - Promotional Materials
+2. Car and Truck Expenses
+   - Fuel and Maintenance
+   - Insurance
+   - Lease Payments
+3. Commissions and Fees
+   - Sales Commissions
+   - Referral Fees
+4. Contract Labor
+   - Temporary Help
+   - Subcontracted Florists
+5. Depletion
+   - (Use only if explicitly relevant)
+6. Depreciation
+   - Equipment Depreciation
+   - Furniture Depreciation
+7. Employee Benefit Programs
+   - Health Insurance
+   - Retirement Contributions
+8. Insurance (Other Than Health)
+   - Liability Insurance
+   - Property Insurance
+9. Mortgage Interest
+   - Business Property Mortgage
+10. Other Interest
+   - Business Loan Interest
+11. Legal and Professional Services
+   - Accounting
+   - Legal Fees
+12. Office Expenses
+   - Office Supplies
+   - Software Subscriptions
+   - Office Rent & Utilities
+13. Pension and Profit-Sharing Plans
+   - Employer Contribution Plans
+14. Rent or Lease
+   - Vehicles, Machinery, Equipment
+   - Other Business Property
+15. Repairs and Maintenance
+   - Equipment Repairs
+   - IT Services & Tech Support
+16. Supplies
+   - Raw Materials for Production
+   - Business Consumables
+   - Packaging Materials
+17. Taxes and Licenses
+   - Business License Fees
+   - Other Applicable Taxes
+18. Travel and Meals
+   - Business Travel
+   - Client/Prospect Meals
+19. Utilities
+   - Electricity, Water, Internet, Phone
+20. Wages
+   - Employee Wages
+21. Other Expenses
+   - Miscellaneous Business Purchases
+
+EXAMPLE (JSON only, no extra text):
+{
+  "receiptNumber": "987654",
+  "receiptTotal": 75.99,
+  "receiptDate": "2024-03-09T10:15:00",
+  "receiptDescription": "Business meal during flower delivery",
+  "companyName": "McDonald’s",
+  "companyAddress": "1234 Elm St, Anytown, USA",
+  "companyPhone": "(555) 987-6543",
+  "taxCategory": "Travel and Meals",
+  "taxSubCategory": "Business Travel"
+}

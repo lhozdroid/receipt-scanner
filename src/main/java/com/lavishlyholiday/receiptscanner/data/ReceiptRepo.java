@@ -11,6 +11,7 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -86,11 +87,10 @@ public class ReceiptRepo {
 
     /**
      * @param state
-     * @param limit
      * @return
      * @throws Exception
      */
-    public List<Receipt> findByStateLimited(String state, Integer limit) throws Exception {
+    public Receipt findOneByStateAndUpdatedBefore(String state, LocalDateTime updatedBefore) throws Exception {
         String query = """
                 SELECT
                 	ID,
@@ -114,21 +114,28 @@ public class ReceiptRepo {
                 	PUBLIC.RECEIPT
                 WHERE
                 	STATE = :state
+                    AND UPDATED_AT <= :updatedBefore
+                ORDER BY
+                    CREATED_AT ASC
                 LIMIT
-                	:limit
+                	1
                 """;
 
         SqlParameterSource params = new MapSqlParameterSource() //
                 .addValue("state", state) //
-                .addValue("limit", limit);
+                .addValue("updatedBefore", updatedBefore) ;
 
         try {
-            return template.query(query, params, new BeanPropertyRowMapper<>(Receipt.class));
+            return template.query(query, params, new BeanPropertyRowMapper<>(Receipt.class)).stream() //
+                    .findFirst() //
+                    .orElse(null);
         } catch (Exception e) {
             LOG.error(e.getMessage(), e);
-            throw new Exception("Unable to find receipts.", e);
+            throw new Exception("Unable to find receipt with state %s.".formatted(state), e);
         }
     }
+
+
 
     /**
      * @param receipt
@@ -190,11 +197,11 @@ public class ReceiptRepo {
     }
 
     /**
-     * @param receipts
+     * @param receipt
      * @throws Exception
      */
     @Transactional(rollbackFor = Exception.class)
-    public void update(List<Receipt> receipts) throws Exception {
+    public void update(Receipt receipt) throws Exception {
         String query = """
                 UPDATE PUBLIC.RECEIPT
                 SET
@@ -218,17 +225,13 @@ public class ReceiptRepo {
                 	ID = :id
                 """;
 
-        List<SqlParameterSource> paramsList = new ArrayList<>();
-        receipts.stream().forEach(receipt -> {
-            SqlParameterSource params = new BeanPropertySqlParameterSource(receipt);
-            paramsList.add(params);
-        });
+        SqlParameterSource params = new BeanPropertySqlParameterSource(receipt);
 
         try {
-            template.batchUpdate(query, paramsList.toArray(new SqlParameterSource[paramsList.size()]));
+            template.update(query, params);
         } catch (Exception e) {
             LOG.error(e.getMessage(), e);
-            throw new Exception("Unable to update receipts.", e);
+            throw new Exception("Unable to update receipt.", e);
         }
     }
 }

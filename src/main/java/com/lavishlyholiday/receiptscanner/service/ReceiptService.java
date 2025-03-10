@@ -6,69 +6,51 @@ import com.lavishlyholiday.receiptscanner.data.model.Receipt;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.core.env.Environment;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 @Service
 @AllArgsConstructor
 @Log4j2
 public class ReceiptService {
     private final ReceiptRepo receiptRepo;
-    private final OllamaService ollamaService;
-    private final Environment environment;
-
-    private final AtomicBoolean running = new AtomicBoolean(false);
+    private final OpenAiService openAiService;
 
     /**
      * @throws Exception
      */
-    @Scheduled(cron = "0 * * * * *")
-    public void analyzeReceipts() throws Exception {
-        if (!running.get()) {
-            running.set(true);
+    public void analyzeReceipt() throws Exception {
+        // Obtains the receipt
+        Receipt receipt = receiptRepo.findOneByStateAndUpdatedBefore(ReceiptState.UPLOAD_COMPLETE.name(), LocalDateTime.now());
 
-            int total = environment.getProperty("receipt.process.limit", Integer.class);
-            LOG.info(StringUtils.rightPad("Starting analysis", 40, ".") + total + " total");
-            long start = System.currentTimeMillis();
+        if (receipt != null) {
+            LOG.info("%s%s".formatted(StringUtils.rightPad("Analyzing receipt", 40, "."), receipt.getFileName()));
 
-            // Obtains the receipts
+            // Updates the state to active
+            receipt.setState(ReceiptState.ANALYSIS_ACTIVE.name());
+            receipt.setUpdatedAt(LocalDateTime.now());
+            receiptRepo.update(receipt);
 
-            List<Receipt> receipts = receiptRepo.findByStateLimited(ReceiptState.UPLOAD_COMPLETE.name(), total);
+            try {
+                // Analyses the receipt
+                analyzeReceipt(receipt);
 
-            // Updates their state
-            receipts.stream().forEach(receipt -> {
-                receipt.setState(ReceiptState.ANALYSIS_ACTIVE.name());
-                receipt.setUpdatedAt(LocalDateTime.now());
-            });
-            receiptRepo.update(receipts);
+                // Updates the state to success
+                receipt.setState(ReceiptState.ANALYSIS_COMPLETE.name());
+            } catch (Exception e) {
+                LOG.error(e.getLocalizedMessage(), e);
 
-            // Does a check for each receipt
-            receipts.stream().parallel().forEach(receipt -> {
-                try {
-                    LOG.info(StringUtils.rightPad("Processing", 40, ".") + receipt.getFileName());
-                    analyzeReceipt(receipt);
-                    receipt.setState(ReceiptState.ANALYSIS_COMPLETE.name());
-                } catch (Exception e) {
-                    LOG.error(e.getMessage(), e);
-                    receipt.setState(ReceiptState.ANALYSIS_FAILED.name());
-                    receipt.setError(e.getMessage());
-                }
+                // Updates the state to failure
+                receipt.setState(ReceiptState.ANALYSIS_FAILED.name());
+                receipt.setError(e.getMessage());
+            }
 
-                receipt.setUpdatedAt(LocalDateTime.now());
-            });
-
-            // Updates the receipts
-            receiptRepo.update(receipts);
-            LOG.info(StringUtils.rightPad("Receipt analysis concluded", 40, ".") + (System.currentTimeMillis() - start) + "ms");
-
-            running.set(false);
+            // Updates the receipt
+            receiptRepo.update(receipt);
         }
     }
 
@@ -78,6 +60,23 @@ public class ReceiptService {
      */
     public List<Receipt> findAll() throws Exception {
         return receiptRepo.findAll();
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void recoverReceipt() throws Exception {
+        // Obtains the receipt
+        LocalDateTime recoverTime = LocalDateTime.now().minusMinutes(5);
+        Receipt receipt = receiptRepo.findOneByStateAndUpdatedBefore(ReceiptState.ANALYSIS_ACTIVE.name(), recoverTime);
+
+        if (receipt != null) {
+            LOG.info("%s%s".formatted(StringUtils.rightPad("Recovering receipt", 40, "."), receipt.getFileName()));
+
+            receipt.setState(ReceiptState.UPLOAD_COMPLETE.name());
+            receipt.setUpdatedAt(LocalDateTime.now());
+            receiptRepo.update(receipt);
+        }
     }
 
     /**
@@ -102,9 +101,10 @@ public class ReceiptService {
      * @throws Exception
      */
     private void analyzeReceipt(Receipt receipt) throws Exception {
-        Receipt analysis = ollamaService.analyzeReceipt(receipt.getFileType(), receipt.getFileData());
+        // Uses Open AI to create an analysis of the receipt
+        Receipt analysis = openAiService.analyzeReceipt(receipt.getFileType(), receipt.getFileData());
 
-        // Sets the data
+        // Sets the data resulting from the analysis
         receipt.setReceiptNumber(analysis.getReceiptNumber());
         receipt.setReceiptTotal(analysis.getReceiptTotal());
         receipt.setReceiptDate(analysis.getReceiptDate());

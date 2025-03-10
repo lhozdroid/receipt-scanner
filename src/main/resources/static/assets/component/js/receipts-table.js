@@ -29,40 +29,41 @@ export default class ReceiptsTable extends HTMLElement {
             }, //
             "typeDetect": false, //
             "columns": [ //
-                {data: "action"}, //
-                {data: "receiptNumber"}, //
-                {data: "receiptTotal"}, //
+                {"data": "action"}, //
+                {"data": "fileName"}, //
+                {"data": "receiptNumber"}, //
+                {"data": "receiptTotal"}, //
                 {
-                    data: "receiptDate", //
-                    render: (data, type, row) => {
+                    "data": "receiptDate", //
+                    "render": (data, type, row) => {
                         return Util.formatLocalDateTime(data);
                     }
                 }, //
-                {data: "receiptDescription"}, //
-                {data: "companyName"}, //
-                {data: "companyAddress"}, //
-                {data: "companyPhone"}, //
-                {data: "taxCategory"}, //
-                {data: "taxSubCategory"}, //
+                {"data": "receiptDescription"}, //
+                {"data": "companyName"}, //
+                {"data": "companyAddress"}, //
+                {"data": "companyPhone"}, //
+                {"data": "taxCategory"}, //
+                {"data": "taxSubCategory"}, //
                 {
-                    data: "state", //
-                    render: (data, type, row) => {
+                    "data": "state", //
+                    "render": (data, type, row) => {
                         return Util.snakeToTitleCase(data);
                     }
                 }, //
                 {
-                    data: "createdAt", //
-                    render: (data, type, row) => {
+                    "data": "createdAt", //
+                    "render": (data, type, row) => {
                         return Util.formatLocalDateTime(data);
                     }
                 }, //
                 {
-                    data: "updatedAt", //
-                    render: (data, type, row) => {
+                    "data": "updatedAt", //
+                    "render": (data, type, row) => {
                         return Util.formatLocalDateTime(data);
                     }
                 }, //
-                {data: "error"}, //
+                {"data": "error"}, //
             ]
         });
     }
@@ -73,7 +74,7 @@ export default class ReceiptsTable extends HTMLElement {
     #initDatatablePlugins() {
         this.#datatablePlugins["columnToggle"] = new DatatablesColumnToggle(this.#datatable, {
             "defaultIgnored": [0], //
-            "defaultHidden": [1, 3, 4, 6, 7, 11, 12, 13]
+            "defaultHidden": [2, 4, 5, 7, 8, 12, 13, 14]
         });
         this.#datatablePlugins["uploadAction"] = new DatatablesAction(this.#datatable, {
             "class": "btn btn-sm btn-success", //
@@ -95,12 +96,14 @@ export default class ReceiptsTable extends HTMLElement {
                 <thead>
                     <tr>
                         <th rowspan="2" data-orderable="false"></th>
+                        <th>File</th>
                         <th colspan="4">Receipt</th>
                         <th colspan="3">Company</th>
                         <th colspan="2">Tax</th>
                         <th colspan="4">System</th>
                     </tr>
                     <tr>
+                        <th>Name</th>
                         <th>Number</th>
                         <th>Total</th>
                         <th>Date</th>
