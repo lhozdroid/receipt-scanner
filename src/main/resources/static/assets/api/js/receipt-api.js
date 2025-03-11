@@ -39,4 +39,24 @@ export default class ReceiptApi {
             })
         });
     }
+
+    /**
+     *
+     * @param id
+     * @returns {Promise<unknown>}
+     */
+    static repeatAnalysis(id) {
+        return new Promise((resolve, reject) => {
+            const url = `${Util.getMeta("context")}api/receipts/${id}/repeat_analysis`;
+            fetch(url, {
+                method: "POST"
+            }).then((response) => {
+                if (response.ok) {
+                    resolve();
+                } else {
+                    response.text().then((text) => reject(text));
+                }
+            })
+        })
+    }
 }

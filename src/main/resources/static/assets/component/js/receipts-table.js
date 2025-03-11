@@ -154,6 +154,10 @@ export default class ReceiptsTable extends HTMLElement {
      * @param row
      */
     #renderAction(data, type, row) {
+        if (row.state !== "REVISION_PENDING") {
+            return "";
+        }
+
         // language=HTML
         const button = new DOMParser().parseFromString(`
             <button type="button" class="btn btn-sm btn-primary">
@@ -162,7 +166,6 @@ export default class ReceiptsTable extends HTMLElement {
         `, "text/html").body.firstChild;
 
         button.addEventListener("click", () => new ReviewReceipt(row));
-
         return button;
     }
 

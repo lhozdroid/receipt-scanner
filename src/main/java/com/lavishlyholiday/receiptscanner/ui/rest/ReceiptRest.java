@@ -44,6 +44,17 @@ public class ReceiptRest {
     }
 
     /**
+     * @param id
+     * @return
+     * @throws Exception
+     */
+    @PostMapping("/{id}/repeat_analysis")
+    public ResponseEntity<Boolean> repeatAnalysis(@PathVariable("id") UUID id) throws Exception {
+        receiptService.repeatAnalysis(id);
+        return ResponseEntity.ok(true);
+    }
+
+    /**
      * @param file
      * @return
      * @throws Exception

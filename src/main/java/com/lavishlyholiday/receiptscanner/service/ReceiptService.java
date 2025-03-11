@@ -55,6 +55,22 @@ public class ReceiptService {
     }
 
     /**
+     *
+     * @param id
+     * @throws Exception
+     */
+    public void repeatAnalysis(UUID id) throws Exception {
+        Receipt receipt = receiptRepo.findById(id);
+        if(receipt == null) {
+            throw new Exception("Receipt not found.");
+        }
+
+        receipt.setState(ReceiptState.UPLOAD_COMPLETE.name());
+        receipt.setUpdatedAt(LocalDateTime.now());
+        receiptRepo.update(receipt);
+    }
+
+    /**
      * @return
      * @throws Exception
      */

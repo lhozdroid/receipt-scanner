@@ -90,6 +90,50 @@ public class ReceiptRepo {
      * @return
      * @throws Exception
      */
+    public Receipt findById(UUID id) throws Exception {
+        String query = """
+                SELECT
+                	ID,
+                	FILE_NAME,
+                	FILE_TYPE,
+                	FILE_DATA,
+                	RECEIPT_NUMBER,
+                	RECEIPT_TOTAL,
+                	RECEIPT_DATE,
+                	RECEIPT_DESCRIPTION,
+                	COMPANY_NAME,
+                	COMPANY_ADDRESS,
+                	COMPANY_PHONE,
+                	TAX_CATEGORY,
+                	TAX_SUB_CATEGORY,
+                	STATE,
+                	ERROR,
+                	CREATED_AT,
+                	UPDATED_AT
+                FROM
+                	PUBLIC.RECEIPT
+                WHERE
+                	ID =:id
+                """;
+
+        SqlParameterSource params = new MapSqlParameterSource() //
+                .addValue("id", id);
+
+        try {
+            return template.query(query, params, new BeanPropertyRowMapper<>(Receipt.class)).stream() //
+                    .findFirst() //
+                    .orElse(null);
+        } catch (Exception e) {
+            LOG.error(e.getMessage(), e);
+            throw new Exception("Unable to obtain the receipt.", e);
+        }
+    }
+
+    /**
+     * @param id
+     * @return
+     * @throws Exception
+     */
     public Receipt findFileById(UUID id) throws Exception {
         String query = """
                 SELECT
@@ -164,7 +208,6 @@ public class ReceiptRepo {
             throw new Exception("Unable to find receipt with state %s.".formatted(state), e);
         }
     }
-
 
     /**
      * @param receipt

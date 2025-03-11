@@ -2,7 +2,7 @@ import BModal, {MODAL_COLOR, MODAL_SIZE} from "../../bmodal/js/bmodal.js";
 import ReceiptApi from "../../api/js/receipt-api.js";
 import TaxCategoryApi from "../../api/js/tax-category-api.js";
 import Util from "../../util/js/util.js";
-import ImageZoom from "./image-zoom.js";
+import ImageZoom from "../../image-zoom/js/image-zoom.js";
 
 export default class ReviewReceipt {
     #receipt = null;
@@ -29,7 +29,37 @@ export default class ReviewReceipt {
             this.#initTaxCategories();
             this.#initForm();
             this.#initZoom();
+            this.#initEvents();
         });
+    }
+
+    /**
+     *
+     */
+    #approveAction() {
+    }
+
+    /**
+     *
+     */
+    #deleteAction() {
+    }
+
+    /**
+     *
+     */
+    #initEvents() {
+        // Obtains the buttons
+        const approveButton = this.#contents.querySelector("button[data-action='approve']");
+        const repeatButton = this.#contents.querySelector("button[data-action='repeat']");
+        const deleteButton = this.#contents.querySelector("button[data-action='delete']");
+        const saveButton = this.#contents.querySelector("button[data-action='save']");
+
+        // Sets the events
+        approveButton.addEventListener("click", () => this.#approveAction());
+        repeatButton.addEventListener("click", () => this.#repeatAction());
+        deleteButton.addEventListener("click", () => this.#deleteAction());
+        saveButton.addEventListener("click", () => this.#saveAction());
     }
 
     /**
@@ -86,15 +116,15 @@ export default class ReviewReceipt {
                                 <strong>${Util.snakeToTitleCase(this.#receipt.state)}</strong>
                             </div>
                             <div class="col text-end">
-                                <button class="btn btn-sm btn-success">
+                                <button class="btn btn-sm btn-success" data-action="approve">
                                     <span class="fa-classic fa-solid fa-thumbs-up fa-fw"></span>
                                     Approve
                                 </button>
-                                <button class="btn btn-sm btn-warning">
+                                <button class="btn btn-sm btn-warning" data-action="repeat">
                                     <span class="fa-classic fa-solid fa-repeat fa-fw"></span>
                                     Repeat Analysis
                                 </button>
-                                <button class="btn btn-sm btn-danger">
+                                <button class="btn btn-sm btn-danger" data-action="delete">
                                     <span class="fa-classic fa-solid fa-trash-can fa-fw"></span>
                                     Delete
                                 </button>
@@ -144,7 +174,7 @@ export default class ReviewReceipt {
                                                 <select class="form-select form-select-sm" name="taxSubCategory"></select>
                                             </div>
                                             <div class="text-end">
-                                                <button class="btn btn-sm btn-success">
+                                                <button class="btn btn-sm btn-success" data-action="save">
                                                     <span class="fa-classic fa-solid fa-check fa-fw"></span>
                                                     Save
                                                 </button>
@@ -231,5 +261,23 @@ export default class ReviewReceipt {
                 resolve();
             });
         });
+    }
+
+    /**
+     *
+     */
+    #repeatAction() {
+        const promise = ReceiptApi.repeatAnalysis(this.#receipt.id);
+        promise.catch((error) => BModal.danger(error));
+        promise.then(() => {
+            this.#modal.close();
+            BModal.success("Analysis will be repeated. Please wait...");
+        });
+    }
+
+    /**
+     *
+     */
+    #saveAction() {
     }
 }
