@@ -37,6 +37,6 @@ export default class ReceiptApi {
                     response.text().then((text) => reject(text));
                 }
             })
-        })
+        });
     }
 }
