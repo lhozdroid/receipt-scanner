@@ -1,6 +1,47 @@
 import Util from "../../util/js/util.js";
 
 export default class ReceiptApi {
+
+    /**
+     *
+     * @param id
+     * @returns {Promise<unknown>}
+     */
+    static approve(id) {
+        return new Promise((resolve, reject) => {
+            const url = `${Util.getMeta("context")}api/receipts/${id}/approve`;
+            fetch(url, {
+                method: "POST"
+            }).then((response) => {
+                if (response.ok) {
+                    resolve();
+                } else {
+                    response.text().then((text) => reject(text));
+                }
+            });
+        });
+    }
+
+    /**
+     *
+     * @param id
+     * @returns {Promise<unknown>}
+     */
+    static deleteById(id) {
+        return new Promise((resolve, reject) => {
+            const url = `${Util.getMeta("context")}api/receipts/${id}`;
+            fetch(url, {
+                method: "DELETE"
+            }).then((response) => {
+                if (response.ok) {
+                    resolve();
+                } else {
+                    response.text().then((text) => reject(text));
+                }
+            });
+        });
+    }
+
     /**
      *
      * @returns {Promise<unknown>}
@@ -16,7 +57,7 @@ export default class ReceiptApi {
                 } else {
                     response.text().then((text) => reject(text));
                 }
-            })
+            });
         });
     }
 
@@ -36,7 +77,7 @@ export default class ReceiptApi {
                 } else {
                     response.text().then((text) => reject(text));
                 }
-            })
+            });
         });
     }
 
@@ -56,7 +97,28 @@ export default class ReceiptApi {
                 } else {
                     response.text().then((text) => reject(text));
                 }
-            })
-        })
+            });
+        });
+    }
+
+    /**
+     *
+     * @param formData
+     * @returns {Promise<unknown>}
+     */
+    static update(formData) {
+        return new Promise((resolve, reject) => {
+            const url = `${Util.getMeta("context")}api/receipts`;
+            fetch(url, {
+                method: "POST", //
+                body: formData,
+            }).then((response) => {
+                if (response.ok) {
+                    resolve();
+                } else {
+                    response.text().then((text) => reject(text));
+                }
+            });
+        });
     }
 }

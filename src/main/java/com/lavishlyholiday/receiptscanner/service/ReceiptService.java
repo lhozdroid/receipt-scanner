@@ -3,6 +3,7 @@ package com.lavishlyholiday.receiptscanner.service;
 import com.lavishlyholiday.receiptscanner.data.ReceiptRepo;
 import com.lavishlyholiday.receiptscanner.data.cons.ReceiptState;
 import com.lavishlyholiday.receiptscanner.data.model.Receipt;
+import com.lavishlyholiday.receiptscanner.service.form.ReceiptForm;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
@@ -25,7 +26,7 @@ public class ReceiptService {
      */
     public void analyzeReceipt() throws Exception {
         // Obtains the receipt
-        Receipt receipt = receiptRepo.findOneByStateAndUpdatedBefore(ReceiptState.UPLOAD_COMPLETE.name(), LocalDateTime.now());
+        Receipt receipt = receiptRepo.findOneByStateAndUpdatedBefore(ReceiptState.ANALYSIS_PENDING.name(), LocalDateTime.now());
 
         if (receipt != null) {
             LOG.info("%s%s".formatted(StringUtils.rightPad("Analyzing receipt", 40, "."), receipt.getFileName()));
@@ -55,19 +56,24 @@ public class ReceiptService {
     }
 
     /**
-     *
      * @param id
      * @throws Exception
      */
-    public void repeatAnalysis(UUID id) throws Exception {
+    public void approve(UUID id) throws Exception {
+        // Obtains the receipt
         Receipt receipt = receiptRepo.findById(id);
-        if(receipt == null) {
+        if (receipt == null) {
             throw new Exception("Receipt not found.");
         }
 
-        receipt.setState(ReceiptState.UPLOAD_COMPLETE.name());
+        // Approves it
+        receipt.setState(ReceiptState.REVISION_COMPLETE.name());
         receipt.setUpdatedAt(LocalDateTime.now());
         receiptRepo.update(receipt);
+    }
+
+    public void deleteById(UUID id) throws Exception {
+        receiptRepo.deleteById(id);
     }
 
     /**
@@ -85,7 +91,7 @@ public class ReceiptService {
      */
     public Receipt findFileDataById(UUID id) throws Exception {
         Receipt receipt = receiptRepo.findFileById(id);
-        if(receipt == null) {
+        if (receipt == null) {
             throw new Exception("File not found.");
         }
         return receipt;
@@ -102,10 +108,51 @@ public class ReceiptService {
         if (receipt != null) {
             LOG.info("%s%s".formatted(StringUtils.rightPad("Recovering receipt", 40, "."), receipt.getFileName()));
 
-            receipt.setState(ReceiptState.UPLOAD_COMPLETE.name());
+            receipt.setState(ReceiptState.ANALYSIS_PENDING.name());
             receipt.setUpdatedAt(LocalDateTime.now());
             receiptRepo.update(receipt);
         }
+    }
+
+    /**
+     * @param id
+     * @throws Exception
+     */
+    public void repeatAnalysis(UUID id) throws Exception {
+        Receipt receipt = receiptRepo.findById(id);
+        if (receipt == null) {
+            throw new Exception("Receipt not found.");
+        }
+
+        receipt.setState(ReceiptState.ANALYSIS_PENDING.name());
+        receipt.setUpdatedAt(LocalDateTime.now());
+        receiptRepo.update(receipt);
+    }
+
+    /**
+     * @param form
+     * @throws Exception
+     */
+    public void update(ReceiptForm form) throws Exception {
+        // Finds the receipt by id
+        Receipt receipt = receiptRepo.findById(form.getId());
+        if (receipt == null) {
+            throw new Exception("Receipt not found.");
+        }
+
+        // Sets the values
+        receipt.setReceiptNumber(form.getReceiptNumber());
+        receipt.setReceiptTotal(form.getReceiptTotal());
+        receipt.setReceiptDescription(form.getReceiptDescription());
+        receipt.setCompanyName(form.getCompanyName());
+        receipt.setCompanyAddress(form.getCompanyAddress());
+        receipt.setCompanyPhone(form.getCompanyPhone());
+        receipt.setTaxCategory(form.getTaxCategory());
+        receipt.setTaxSubCategory(form.getTaxSubCategory());
+        receipt.setUpdatedAt(LocalDateTime.now());
+
+        // Updates
+        receiptRepo.update(receipt);
     }
 
     /**
@@ -162,7 +209,7 @@ public class ReceiptService {
         receipt.setFileType(file.getContentType());
         receipt.setFileData(file.getBytes());
 
-        receipt.setState(ReceiptState.UPLOAD_COMPLETE.name());
+        receipt.setState(ReceiptState.ANALYSIS_PENDING.name());
         receipt.setCreatedAt(now);
         receipt.setUpdatedAt(now);
 

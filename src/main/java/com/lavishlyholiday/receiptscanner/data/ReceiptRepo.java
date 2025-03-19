@@ -22,6 +22,29 @@ public class ReceiptRepo {
     private final NamedParameterJdbcTemplate template;
 
     /**
+     * @param id
+     * @throws Exception
+     */
+    @Transactional(rollbackFor = Exception.class)
+    public void deleteById(UUID id) throws Exception {
+        String query = """
+                DELETE FROM PUBLIC.RECEIPT
+                WHERE
+                	ID =:id
+                """;
+
+        SqlParameterSource params = new MapSqlParameterSource() //
+                .addValue("id", id);
+
+        try {
+            template.update(query, params);
+        } catch (Exception e) {
+            LOG.error(e.getMessage(), e);
+            throw new Exception("Unable to delete receipt.", e);
+        }
+    }
+
+    /**
      * @param fileName
      * @return
      * @throws Exception

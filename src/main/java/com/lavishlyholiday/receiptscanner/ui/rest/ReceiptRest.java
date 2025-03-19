@@ -2,6 +2,7 @@ package com.lavishlyholiday.receiptscanner.ui.rest;
 
 import com.lavishlyholiday.receiptscanner.data.model.Receipt;
 import com.lavishlyholiday.receiptscanner.service.ReceiptService;
+import com.lavishlyholiday.receiptscanner.service.form.ReceiptForm;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpHeaders;
@@ -18,6 +19,28 @@ import java.util.UUID;
 @AllArgsConstructor
 public class ReceiptRest {
     private final ReceiptService receiptService;
+
+    /**
+     * @param id
+     * @return
+     * @throws Exception
+     */
+    @PostMapping("/{id}/approve")
+    public ResponseEntity<Boolean> approve(@PathVariable("id") UUID id) throws Exception {
+        receiptService.approve(id);
+        return ResponseEntity.ok(true);
+    }
+
+    /**
+     * @param id
+     * @return
+     * @throws Exception
+     */
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Boolean> deleteById(@PathVariable("id") UUID id) throws Exception {
+        receiptService.deleteById(id);
+        return ResponseEntity.ok(true);
+    }
 
     /**
      * @return
@@ -51,6 +74,17 @@ public class ReceiptRest {
     @PostMapping("/{id}/repeat_analysis")
     public ResponseEntity<Boolean> repeatAnalysis(@PathVariable("id") UUID id) throws Exception {
         receiptService.repeatAnalysis(id);
+        return ResponseEntity.ok(true);
+    }
+
+    /**
+     * @param form
+     * @return
+     * @throws Exception
+     */
+    @PostMapping("")
+    public ResponseEntity<Boolean> update(@ModelAttribute ReceiptForm form) throws Exception {
+        receiptService.update(form);
         return ResponseEntity.ok(true);
     }
 
