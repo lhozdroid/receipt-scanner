@@ -1,0 +1,43 @@
+name: "receipt_scanner"
+
+services:
+  postgres:
+    image: postgres:latest
+    container_name: receipt_scanner_postgresql
+    ports:
+      - "10100:5432"
+    environment:
+      POSTGRES_USER: pguser
+      POSTGRES_PASSWORD: nb>6PHN]+xs')(*^@8wXD%
+      POSTGRES_DB: receipt_scanner
+    restart: always
+    volumes:
+      - receipt_scanner_postgresql_data:/var/lib/postgresql/data
+    networks:
+      - receipt_scanner_network
+
+  spring_app:
+    build: .
+    image: receipt_scanner:latest
+    container_name: receipt_scanner_spring
+    ports:
+      - "10000:8080"
+    environment:
+      SPRING_SERVER_PORT: 8080
+      SPRING_DATASOURCE_URL: jdbc:postgresql://receipt_scanner_postgresql:5432/receipt_scanner
+      SPRING_DATASOURCE_USERNAME: pguser
+      SPRING_DATASOURCE_PASSWORD: "nb>6PHN]+xs')(*^@8wXD%"
+    depends_on:
+      - postgres
+    restart: always
+    networks:
+      - receipt_scanner_network
+
+volumes:
+  receipt_scanner_postgresql_data:
+    name: receipt_scanner_postgresql_data
+
+networks:
+  receipt_scanner_network:
+    name: receipt_scanner_network
+    driver: bridge
