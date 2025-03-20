@@ -35,7 +35,7 @@ export default class Util {
      * @returns {string}
      */
     static formatLocalDateTime(localDateTime) {
-        if (localDateTime == null || localDateTime.length < 7) {
+        if (localDateTime == null || localDateTime.length < 5) {
             return "Not Available.";
         }
         const [year, month, day, hours, minutes] = localDateTime;
