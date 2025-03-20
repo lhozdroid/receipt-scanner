@@ -11,7 +11,7 @@
 
   <groupId>com.lavishlyholiday</groupId>
   <artifactId>receipt-scanner</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
+  <version>1.0.0</version>
   <packaging>war</packaging>
 
   <name>receipt-scanner</name>
@@ -117,6 +117,7 @@
   </dependencies>
 
   <build>
+    <finalName>receipt-scanner</finalName>
     <plugins>
       <plugin>
         <artifactId>maven-compiler-plugin</artifactId>
@@ -144,6 +145,14 @@
       <plugin>
         <artifactId>pom-cleaner-maven-plugin</artifactId>
         <version>${pom-cleaner-maven-plugin.version}</version>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-war-plugin</artifactId>
+        <version>3.4.0</version>
+        <configuration>
+          <failOnMissingWebXml>false</failOnMissingWebXml>
+        </configuration>
       </plugin>
     </plugins>
   </build>
