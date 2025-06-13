@@ -8,7 +8,7 @@ services:
       - "10100:5432"
     environment:
       POSTGRES_USER: pguser
-      POSTGRES_PASSWORD: nb>6PHN]+xs')(*^@8wXD%
+      POSTGRES_PASSWORD:
       POSTGRES_DB: receipt_scanner
     restart: always
     volumes:
@@ -26,7 +26,7 @@ services:
       SPRING_SERVER_PORT: 8080
       SPRING_DATASOURCE_URL: jdbc:postgresql://receipt_scanner_postgresql:5432/receipt_scanner
       SPRING_DATASOURCE_USERNAME: pguser
-      SPRING_DATASOURCE_PASSWORD: "nb>6PHN]+xs')(*^@8wXD%"
+      SPRING_DATASOURCE_PASSWORD: ""
     depends_on:
       - postgres
     restart: always
